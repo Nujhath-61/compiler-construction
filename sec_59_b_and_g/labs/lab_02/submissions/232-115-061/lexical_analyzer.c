@@ -2,7 +2,6 @@
    Read argv[1] with fopen/fgetc. Do not hard-code public.c or its token list.
    You may add helper functions. This starter is deliberately unfinished. */
 #include <stdio.h>
-#include <ctype.h>
 #include <string.h>
 
 int main(int argc, char **argv)
@@ -24,19 +23,20 @@ int c;
 while ((c = fgetc(input)) != EOF) {
 
     // Ignore whitespace
-    if (isspace((unsigned char)c)) {
+    if ( c == ' ' || c == '\t' || c == '\r' || c == '\n') {
         continue;
     }
 
     // Identifies identifier or keyword (only keywords in Lab_02.pdf)
-    if (isalpha((unsigned char)c) || c == '_') {
+    if ((c >= 'A' &&  c <= 'Z')|| (c>= 'a' && c <= 'z') || c == '_') {
         char word[1000];
         int i = 0;
 
         word[i++] = (char)c;
 
         while ((c = fgetc(input)) != EOF &&
-               (isalnum((unsigned char)c) || c == '_')) {
+                (((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+              (c >= '0' && c <= '9')) || c == '_')) {
             if (i < 999) {
                 word[i++] = (char)c;
             }
@@ -94,14 +94,14 @@ while ((c = fgetc(input)) != EOF) {
     }
 
     // Recognize complete integer numbers
-    else if (isdigit((unsigned char)c)) {
+    else if (c >= '0' && c <= '9') {
         char number[1000];
         int i = 0;
 
         number[i++] = (char)c;
 
         while ((c = fgetc(input)) != EOF &&
-               isdigit((unsigned char)c)) {
+              (c>= '0' && c<= '9')) {
             if (i < 999) {
                 number[i++] = (char)c;
             }
@@ -153,7 +153,7 @@ while ((c = fgetc(input)) != EOF) {
         if (next == '=') {
             printf("!= , RELATIONAL_OPERATOR\n");
         } else {
-            printf("! , UNKNOWN\n");
+            printf("! , LOGICAL_OPERATOR\n");
 
             if (next != EOF) {
                 ungetc(next, input);
@@ -162,17 +162,18 @@ while ((c = fgetc(input)) != EOF) {
     }
 
     // Arithmetic operators
-    else if (c == '+' || c == '-' || c == '*') {
+    else if (c == '+' || c == '-' || c == '*' || c=='%') {
         printf("%c , ARITHMETIC_OPERATOR\n", c);
     }
 
     // Logical operators: && and ||
-    else if (c == '&' || c == '|') {
+    else if (c == '&' || c == '|' ) {
         int next = fgetc(input);
 
         if (next == c) {
             printf("%c%c , LOGICAL_OPERATOR\n", c, next);
-        } else {
+        } 
+        else {
             printf("%c , UNKNOWN\n", c);
 
             if (next != EOF) {
