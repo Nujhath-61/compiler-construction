@@ -113,7 +113,7 @@ while ((c = fgetc(input)) != EOF) {
             ungetc(c, input);
         }
 
-        printf("%s , NUMBER\n", number);
+        printf("%s , INTEGER\n", number);
     }
 
     // Assignment (=) or equality (==)
